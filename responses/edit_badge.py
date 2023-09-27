@@ -28,3 +28,10 @@ async def edit_badge_stage_2(bot, message, state):
         text="Данные успешно изменены",
         reply_markup=keyboards["info_keyboard"],
     )
+
+
+async def edit_badge_stage_error(bot, message, stage):
+    await bot.send_message(
+        chat_id=message.chat.id,
+        text="Можно вводить только цифры",
+    )
