@@ -33,9 +33,22 @@ async def handle_text(message: types.Message):
     if message.text in responses:
         await responses[message.text](bot, message)
 
+
 @dp.message_handler(state=EditBadge.waiting_for_number_badge)
 async def handle_text(message: types.Message, state: FSMContext):
+    try:
+        if message.text == "Назад 🔙":
+            await responses[message.text](bot, message, state)
+            return
+
+        int(message.text)
+
+    except ValueError:
+        await edit_badge.edit_badge_stage_error(bot, message, state)
+        return
+
     await edit_badge.edit_badge_stage_2(bot, message, state)
+
 
 @dp.callback_query_handler(lambda c: True)
 async def callback(callback: types.CallbackQuery):
@@ -54,6 +67,7 @@ async def callback(callback: types.CallbackQuery):
                            need_shipping_address=None,
                            )
 
+
 @dp.pre_checkout_query_handler()
 async def pre_check_query(pre_query: types.PreCheckoutQuery):
     transaction = Transaction(
@@ -65,6 +79,7 @@ async def pre_check_query(pre_query: types.PreCheckoutQuery):
     session.commit()
 
     await bot.answer_pre_checkout_query(pre_query.id, ok=True)
+
 
 @dp.message_handler(content_types=types.message.ContentType.SUCCESSFUL_PAYMENT)
 async def success_payment(message: types.Message):
